@@ -1,0 +1,70 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #6e78f7, #89cff0);
+    color: white;
+  }
+  
+  .homepage {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .homepage-header {
+    max-width: 600px;
+    padding: 20px;
+    background: rgba(43, 44, 41, 0.741);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .homepage-header h1 {
+    font-size: 3rem;
+    margin: 0;
+    color: #fff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .homepage-header p {
+    font-size: 1.2rem;
+    margin: 10px 0 20px;
+    line-height: 1.5;
+    color: #f0f8ff;
+  }
+  
+  .homepage-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .btn-homepage {
+    text-decoration: none;
+    background: #575fcf;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-homepage:hover {
+    background: #4c57b6;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+  }
+  
+  .btn-homepage.btn-secondary {
+    background: #f85f73;
+  }
+  
+  .btn-homepage.btn-secondary:hover {
+    background: #d54a61;
+  }
+  
