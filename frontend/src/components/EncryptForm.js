@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import "./EncryptForm.css";
 
 function EncryptForm() {
@@ -9,11 +10,20 @@ function EncryptForm() {
   const [sensitivity, setSensitivity] = useState("Low");
   const [key, setKey] = useState("");
   const [result, setResult] = useState("");
+  const [username, setUsername] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setUsername(decodedToken.username);
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
   };
 
   const handleSubmit = async (e) => {
@@ -39,6 +49,7 @@ function EncryptForm() {
     <div className="encrypt-page">
       <div className="encrypt-card">
         <h2>Mesaj Şifreleme</h2>
+        <p>Mesajınızı şifrelemek için aşağıdaki formu doldurun.</p>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label>Alıcı E-Posta</label>
@@ -49,7 +60,6 @@ function EncryptForm() {
               required
             />
           </div>
-
           <div className="input-group">
             <label>Mesaj</label>
             <textarea
@@ -59,7 +69,6 @@ function EncryptForm() {
               required
             />
           </div>
-
           <div className="input-group">
             <label>Hassasiyet Seviyesi</label>
             <select
@@ -71,7 +80,6 @@ function EncryptForm() {
               <option value="High">Yüksek (RSA)</option>
             </select>
           </div>
-
           <div className="input-group">
             <label>Şifreleme Anahtarı (Opsiyonel)</label>
             <input
@@ -81,7 +89,6 @@ function EncryptForm() {
               onChange={(e) => setKey(e.target.value)}
             />
           </div>
-
           <button type="submit" className="btn-primary">
             Şifrele ve Gönder
           </button>
@@ -98,8 +105,8 @@ function EncryptForm() {
             </p>
           </div>
         )}
-
-        <button onClick={handleLogout} className="btn-secondary">
+        <div className="username-display">Kullanıcı: {username}</div>
+        <button onClick={handleLogout} className="logout-button">
           Çıkış Yap
         </button>
       </div>

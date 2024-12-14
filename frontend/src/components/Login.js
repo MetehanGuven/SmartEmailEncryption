@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post("http://127.0.0.1:5000/login", {
-        email,
+        username,
         password,
       });
       const { token } = response.data;
@@ -30,11 +30,11 @@ function Login() {
         <h2>Giriş Yap</h2>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label>Email</label>
+            <label>Kullanıcı Adı</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>

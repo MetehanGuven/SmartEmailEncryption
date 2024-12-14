@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import RegisterForm from "./components/Register";
 import EncryptForm from "./components/EncryptForm";
 import LoginForm from "./components/Login";
+import Decrypt from "./components/Decrypt";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/encrypt" element={<EncryptForm />} />
+          <Route path="/decrypt" element={<Decrypt />} />
         </Routes>
       </Router>
     </ThemeProvider>

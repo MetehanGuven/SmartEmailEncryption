@@ -1,71 +1,102 @@
+/* Global Ayarlar */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(to bottom right, #1e3a8a, #16213e);
+  color: white;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Login Sayfası */
 .login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #89cff0, #6e78f7);
-  }
-  
-  .login-card {
-    width: 400px;
-    padding: 30px;
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .login-card h2 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .input-group {
-    margin-bottom: 20px;
-  }
-  
-  .input-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #555;
-  }
-  
-  .input-group input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s ease;
-  }
-  
-  .input-group input:focus {
-    border-color: #4b57ff;
-  }
-  
-  .btn-primary {
-    padding: 10px 20px;
-    background: #4b57ff;
-    color: #fff;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
-  }
-  
-  .btn-primary:hover {
-    background: #6b73ff;
-    transform: translateY(-3px);
-  }
-  
-  .register-link {
-    margin-top: 20px;
-    color: #777;
-  }
-  
-  .register-link a {
-    color: #4b57ff;
-    text-decoration: none;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-card {
+  width: 400px;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.login-card h2 {
+  font-size: 2.5rem;
+  color: #ff758c;
+  margin-bottom: 20px;
+}
+
+/* Giriş Alanları */
+.input-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #f0f0f0;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.input-group input:focus {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(255, 117, 140, 0.5);
+  transform: scale(1.02);
+}
+
+/* Buton Stili */
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(to right, #ff758c, #ff5274);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #ff5274, #ff758c);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Kayıt Ol Linki */
+.register-link {
+  margin-top: 20px;
+  color: #a9a9a9;
+}
+
+.register-link a {
+  color: #ff758c;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+  color: #ff5274;
+}

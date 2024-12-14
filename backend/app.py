@@ -12,6 +12,7 @@ from Crypto.Cipher import AES, Blowfish
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 import base64
+from Crypto.Util.Padding import pad, unpad
 
 # PostgreSQL Bağlantısı
 conn = psycopg2.connect(
@@ -30,35 +31,10 @@ CORS(app)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EMAIL_ADDRESS = "metehaanguveen@gmail.com"
-EMAIL_PASSWORD = "yhvb arfb hymc hmjn"
+EMAIL_PASSWORD = "nlko anht xxtt rrtl"
 
 # JWT Ayarları
-SECRET_KEY = "your_secret_key"
-
-# AES Şifreleme
-def encrypt_aes(message, key):
-    key = key.ljust(16)[:16]  # 16 byte uzunluk
-    cipher = AES.new(key.encode('utf-8'), AES.MODE_EAX)
-    ciphertext, tag = cipher.encrypt_and_digest(message.encode('utf-8'))
-    return base64.b64encode(cipher.nonce + tag + ciphertext).decode('utf-8')
-
-# Blowfish Şifreleme
-def encrypt_blowfish(message, key):
-    key = key.ljust(16)[:16]
-    cipher = Blowfish.new(key.encode('utf-8'), Blowfish.MODE_ECB)
-    block_size = Blowfish.block_size
-    plen = block_size - len(message.encode('utf-8')) % block_size
-    padding = bytes([plen] * plen)
-    padded_message = message.encode('utf-8') + padding
-    ciphertext = cipher.encrypt(padded_message)
-    return base64.b64encode(ciphertext).decode('utf-8')
-
-# RSA Şifreleme
-def encrypt_rsa(message, key):
-    rsa_key = RSA.import_key(key.encode('utf-8'))
-    cipher = PKCS1_OAEP.new(rsa_key)
-    ciphertext = cipher.encrypt(message.encode('utf-8'))
-    return base64.b64encode(ciphertext).decode('utf-8')
+SECRET_KEY = "my_secret_key"
 
 
 # JWT Token Doğrulama
@@ -78,23 +54,71 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+
+def encrypt_aes(message, key):
+    key = key.ljust(16)[:16].encode('utf-8')
+    cipher = AES.new(key, AES.MODE_EAX)
+    ciphertext, tag = cipher.encrypt_and_digest(message.encode('utf-8'))
+    encrypted_data = cipher.nonce + tag + ciphertext
+    return base64.b64encode(encrypted_data).decode('utf-8')
+
+def decrypt_aes(encrypted_message, key):
+    key = key.ljust(16)[:16].encode('utf-8')
+    encrypted_data = base64.b64decode(encrypted_message)
+    nonce, tag, ciphertext = encrypted_data[:16], encrypted_data[16:32], encrypted_data[32:]
+    cipher = AES.new(key, AES.MODE_EAX, nonce=nonce)
+    message = cipher.decrypt_and_verify(ciphertext, tag)
+    return message.decode('utf-8')
+
+# Blowfish Şifreleme ve Çözme
+def encrypt_blowfish(message, key):
+    key = key.ljust(16)[:16].encode('utf-8')
+    cipher = Blowfish.new(key, Blowfish.MODE_CBC)
+    padded_message = message.encode('utf-8') + (b"\x00" * (8 - len(message.encode('utf-8')) % 8))
+    ciphertext = cipher.encrypt(padded_message)
+    return base64.b64encode(ciphertext).decode('utf-8')
+
+def decrypt_blowfish(encrypted_message, key):
+    key = key.ljust(16)[:16].encode('utf-8')
+    cipher = Blowfish.new(key, Blowfish.MODE_CBC)
+    ciphertext = base64.b64decode(encrypted_message)
+    decrypted_message = cipher.decrypt(ciphertext).rstrip(b'\x00')
+    return decrypted_message.decode('utf-8')
+
+# RSA Şifreleme ve Çözme
+def encrypt_rsa(message, public_key_str):
+    public_key = RSA.import_key(public_key_str.encode('utf-8'))
+    cipher = PKCS1_OAEP.new(public_key)
+    ciphertext = cipher.encrypt(message.encode('utf-8'))
+    return base64.b64encode(ciphertext).decode('utf-8')
+
+def decrypt_rsa(encrypted_message, private_key_str):
+    private_key = RSA.import_key(private_key_str.encode('utf-8'))
+    cipher = PKCS1_OAEP.new(private_key)
+    decrypted_message = cipher.decrypt(base64.b64decode(encrypted_message))
+    return decrypted_message.decode('utf-8')
+
+
 # Kayıt Rotası
 @app.route('/register', methods=['POST'])
 def register_user():
     try:
         data = request.json
+        username = data.get('username')
         email = data.get('email')
         password = data.get('password')
 
-        if not email or not password:
-            return jsonify({"error": "Email ve şifre gereklidir."}), 400
+        if not username or not email or not password:
+            return jsonify({"error": "Tüm alanlar gereklidir."}), 400
 
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         verification_code = secrets.token_hex(3)
 
         cursor.execute(
-            "INSERT INTO users (email, password, verification_code, is_verified) VALUES (%s, %s, %s, %s)",
-            (email, hashed_password.decode('utf-8'), verification_code, False)
+            "INSERT INTO users (username, email, password, verification_code, is_verified) VALUES (%s, %s, %s, %s, %s)",
+            (username, email, hashed_password.decode('utf-8'), verification_code, False)
         )
         conn.commit()
 
@@ -147,26 +171,54 @@ def verify_user():
 def login_user():
     try:
         data = request.json
-        email = data['email']
+        username = data['username']
         password = data['password']
 
-        cursor.execute("SELECT password, is_verified FROM users WHERE email = %s", (email,))
+        cursor.execute("SELECT password, is_verified, email FROM users WHERE username = %s", (username,))
         user = cursor.fetchone()
 
         if not user:
             return jsonify({"error": "Kullanıcı bulunamadı."}), 404
 
-        hashed_password, is_verified = user
+        hashed_password, is_verified, email = user
         if not is_verified:
             return jsonify({"error": "Kullanıcı henüz doğrulanmamış."}), 403
 
         if not bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
             return jsonify({"error": "Yanlış şifre."}), 401
 
-        token = jwt.encode({"email": email, "exp": datetime.utcnow() + timedelta(hours=1)}, SECRET_KEY, algorithm="HS256")
+        token = jwt.encode({"username": username, "email": email, "exp": datetime.utcnow() + timedelta(hours=1)}, SECRET_KEY, algorithm="HS256")
         return jsonify({"message": "Giriş başarılı.", "token": token}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Şifre Çözme Rotası
+@app.route('/decrypt', methods=['POST'])
+def decrypt_message():
+    try:
+        data = request.json
+        encrypted_message = data.get('encrypted_message')
+        algorithm = data.get('algorithm')
+        key = data.get('key')
+
+        if algorithm == "AES":
+            decrypted_message = decrypt_aes(encrypted_message, key)
+        elif algorithm == "Blowfish":
+            decrypted_message = decrypt_blowfish(encrypted_message, key)
+        elif algorithm == "RSA":
+            if not key:
+                return jsonify({"error": "RSA anahtarı gereklidir."}), 400
+            decrypted_message = decrypt_rsa(encrypted_message, key)
+        else:
+            return jsonify({"error": "Geçersiz algoritma türü."}), 400
+
+        return jsonify({
+            "message": "Şifre çözme işlemi başarılı.",
+            "decrypted_message": decrypted_message
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # Şifreleme Rotası
 @app.route('/encrypt', methods=['POST'])
@@ -194,10 +246,15 @@ def encrypt_message(current_user):
             algorithm = "RSA"
             if not key:
                 return jsonify({"error": "RSA anahtarı gereklidir."}), 400
-            encrypted_message = encrypt_rsa(message, key)
+            try:
+                encrypted_message = encrypt_rsa(message, key)
+            except Exception as e:
+                logging.error(f"RSA şifreleme hatası: {str(e)}")
+                return jsonify({"error": f"RSA şifreleme hatası: {str(e)}"}), 500
         else:
             return jsonify({"error": "Geçersiz hassasiyet seviyesi."}), 400
 
+        # E-posta gönderimi
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
@@ -208,7 +265,7 @@ def encrypt_message(current_user):
                 "plain",
                 "utf-8"
             )
-            email_message["From"] = current_user
+            email_message["From"] = EMAIL_ADDRESS
             email_message["To"] = recipient_email
             email_message["Subject"] = "Şifrelenmiş Mesaj Gönderimi"
             server.sendmail(EMAIL_ADDRESS, recipient_email, email_message.as_string())
@@ -219,6 +276,7 @@ def encrypt_message(current_user):
             "algorithm": algorithm
         }), 200
     except Exception as e:
+        logging.error(f"Genel şifreleme hatası: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 import React from "react";
+import mailImage from "../assets/mail.webp";
 import "./HomePage.css";
 
 function HomePage() {
@@ -11,10 +12,16 @@ function HomePage() {
           <a href="/register" className="btn-homepage">
             Kayıt Ol
           </a>
-          <a href="/login" className="btn-homepage btn-secondary">
+          <a href="/login" className="btn-homepage">
             Giriş Yap
           </a>
+          <a href="/decrypt" className="btn-homepage btn-decrypt">
+            Şifreli Mesajını Çöz
+          </a>
         </div>
+      </div>
+      <div className="image-container">
+        <img src={mailImage} alt="Secure Email" />
       </div>
     </div>
   );

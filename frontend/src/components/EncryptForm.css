@@ -1,30 +1,83 @@
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
+  font-family: 'Montserrat', sans-serif;
   margin: 0;
   padding: 0;
-}
-
-.encrypt-page {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #89cff0, #6e78f7);
+  overflow: hidden;
+}
+.username-display {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8f9dff;
+  z-index: 100;
 }
 
-.encrypt-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  width: 400px;
+.logout-button {
+  position: absolute;
+  top: 40px; /* Kullanıcı adı yazısından hemen aşağı */
+  left: 20px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.logout-button:hover {
+  background: #e63946;
+  transform: translateY(-2px);
+}
+
+
+.encrypt-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.encrypt-header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .encrypt-card h2 {
-  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #e94560; 
   text-align: center;
-  color: #444;
+  margin-bottom: 10px;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.encrypt-card p {
+  font-size: 1.3rem;
+  color: #f0f0f0; 
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.encrypt-form {
+  background: rgb(238, 236, 236);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 500px;
 }
 
 .input-group {
@@ -32,74 +85,114 @@ body {
 }
 
 .input-group label {
+  font-size: 1rem;
   font-weight: bold;
+  margin-bottom: 5px;
   display: block;
-  margin-bottom: 8px;
-  color: #333;
+  color: #c8d6e5;
 }
 
 .input-group input,
 .input-group select,
 .input-group textarea {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(81, 203, 238, 0.8);
 }
 
 .input-group textarea {
   resize: none;
+  height: 80px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-bottom: 15px;
 }
 
 .btn-primary {
-  background: #6e78f7;
+  background: linear-gradient(135deg, #6c5ce7, #00cec9);
   color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 5px;
-  width: 100%;
-  cursor: pointer;
-  font-size: 16px;
 }
 
 .btn-primary:hover {
-  background: #575fcf;
+  background: linear-gradient(135deg, #00cec9, #6c5ce7);
+  transform: translateY(-3px);
 }
 
-
 .btn-secondary {
-  background: #ff6b6b;
+  background: linear-gradient(135deg, #d63031, #e84393);
   color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 5px;
-  width: 100%;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 15px;
-  text-align: center;
-  font-weight: bold;
-  transition: background 0.3s ease;
 }
 
 .btn-secondary:hover {
-  background: #e63946;
+  background: linear-gradient(135deg, #e84393, #d63031);
+  transform: translateY(-3px);
 }
 
-
-.result-card {
+.result-box {
   margin-top: 20px;
-  background: #f4f4f9;
   padding: 15px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-align: left;
+}
+
+.result-box h4 {
+  font-size: 1.2rem;
+  color: #55efc4;
+  margin-bottom: 10px;
+}
+
+.result-box p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.input-group select {
+  background-color: #1a1a2e; /* Açılır liste arka plan rengi */
+  color: #f0f0f0; /* Yazı rengi */
+  border: 1px solid #575fcf; /* Kenar rengi */
+  padding: 10px;
   border-radius: 5px;
-  border-left: 5px solid #6e78f7;
+  font-size: 1rem;
+  appearance: none; /* Varsayılan stil kaldırılır */
 }
 
-.result-card h4 {
-  margin: 0 0 10px;
+.input-group select:focus {
+  outline: none;
+  border: 1px solid #e94560; /* Odaklandığında kenar rengi */
 }
 
-.result-card p {
-  margin: 5px 0;
-  color: #555;
+.input-group select option {
+  background-color: #1a1a2e; /* Açılır menü seçeneklerinin arka plan rengi */
+  color: #f0f0f0; /* Açılır menü seçeneklerinin yazı rengi */
 }

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./Register.css";
 
 function Register() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -15,11 +16,12 @@ function Register() {
     e.preventDefault();
     try {
       const response = await axios.post("http://127.0.0.1:5000/register", {
+        username,
         email,
         password,
       });
       setMessage(response.data.message);
-      setShowVerification(true); // Doğrulama penceresini göster
+      setShowVerification(true);
     } catch (error) {
       setMessage(error.response ? error.response.data.error : error.message);
     }
@@ -33,7 +35,7 @@ function Register() {
       });
       setMessage(response.data.message);
       setShowVerification(false);
-      navigate("/"); // Doğrulama başarılı, pencereyi kapat
+      navigate("/login");
     } catch (error) {
       setMessage(error.response ? error.response.data.error : error.message);
     }
@@ -41,54 +43,72 @@ function Register() {
 
   return (
     <div className="register-page">
-      <div className="register-card">
-        <h2>Kayıt Ol</h2>
-        {!showVerification ? (
-          <form onSubmit={handleRegister}>
-            <div className="input-group">
-              <label>E-Posta</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="input-group">
-              <label>Şifre</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn-primary">
-              Kayıt Ol
-            </button>
-            <p className="login-link">
-              Hesabınız var mı? <a href="/login">Giriş Yap</a>
-            </p>
-          </form>
-        ) : (
-          <div>
-            <h5>Doğrulama Kodunu Girin</h5>
-            <div className="input-group">
-              <label>Doğrulama Kodu</label>
-              <input
-                type="text"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                required
-              />
-            </div>
-            <button className="btn-primary" onClick={handleVerify}>
-              Doğrula
-            </button>
+      <div className="dynamic-background"></div>
+      {!showVerification && (
+        <>
+          <h2>Kayıt Ol</h2>
+          <p>
+            Hesabınızı oluşturun ve güvenli e-posta şifreleme hizmetimize
+            katılın.
+          </p>
+        </>
+      )}
+      {showVerification ? (
+        <div>
+          <h5 className="verify-heading">Doğrulama Kodunu Girin</h5>
+          <div className="input-group">
+            <label>Doğrulama Kodu</label>
+            <input
+              type="text"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              required
+            />
           </div>
-        )}
-        {message && <div className="message-box">{message}</div>}
-      </div>
+          <button className="btn-primary" onClick={handleVerify}>
+            Doğrula
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleRegister}>
+          <div className="input-group">
+            <label>Kullanıcı Adı</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>E-Posta</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>Şifre</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn-primary">
+            Kayıt Ol
+          </button>
+        </form>
+      )}
+      {message && <div className="message-box">{message}</div>}
+      {!showVerification && (
+        <div className="login-link">
+          Hesabınız var mı? <a href="/login">Giriş Yap</a>
+        </div>
+      )}
     </div>
   );
 }
