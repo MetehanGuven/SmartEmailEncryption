@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+// Eğer jwt-decode paketi 3.x sürümüyse named export: { jwtDecode }
+// Daha eskiyse default export: jwt_decode
 import { jwtDecode } from "jwt-decode";
 import "./EncryptForm.css";
 
@@ -8,8 +10,7 @@ function EncryptForm() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [message, setMessage] = useState("");
   const [sensitivity, setSensitivity] = useState("Low");
-  const [key, setKey] = useState("");
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState(null);
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
@@ -30,9 +31,15 @@ function EncryptForm() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
+      const requestData = {
+        recipient_email: recipientEmail,
+        message: message,
+        sensitivity: sensitivity, // Low / Medium / High / Asymmetric
+      };
+
       const response = await axios.post(
         "http://127.0.0.1:5000/encrypt",
-        { recipient_email: recipientEmail, message, sensitivity, key },
+        requestData,
         {
           headers: {
             "x-access-token": token,
@@ -42,6 +49,7 @@ function EncryptForm() {
       setResult(response.data);
     } catch (error) {
       alert("Mesaj şifreleme sırasında bir hata oluştu.");
+      console.error(error);
     }
   };
 
@@ -60,6 +68,7 @@ function EncryptForm() {
               required
             />
           </div>
+
           <div className="input-group">
             <label>Mesaj</label>
             <textarea
@@ -69,6 +78,7 @@ function EncryptForm() {
               required
             />
           </div>
+
           <div className="input-group">
             <label>Hassasiyet Seviyesi</label>
             <select
@@ -77,18 +87,12 @@ function EncryptForm() {
             >
               <option value="Low">Düşük (AES)</option>
               <option value="Medium">Orta (Blowfish)</option>
-              <option value="High">Yüksek (RSA)</option>
+              <option value="High">Yüksek (ChaCha20)</option>
+              {/* Yeni eklediğimiz seçenek */}
+              <option value="Asymmetric">Asimetrik (ECIES)</option>
             </select>
           </div>
-          <div className="input-group">
-            <label>Şifreleme Anahtarı (Opsiyonel)</label>
-            <input
-              type="text"
-              placeholder="Anahtar girin (RSA için opsiyonel)"
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
-            />
-          </div>
+
           <button type="submit" className="btn-primary">
             Şifrele ve Gönder
           </button>
@@ -103,8 +107,14 @@ function EncryptForm() {
             <p>
               <b>Kullanılan Algoritma:</b> {result.algorithm}
             </p>
+            {result.private_key && (
+              <p>
+                <b>Key (private_key):</b> {result.private_key}
+              </p>
+            )}
           </div>
         )}
+
         <div className="username-display">Kullanıcı: {username}</div>
         <button onClick={handleLogout} className="logout-button">
           Çıkış Yap

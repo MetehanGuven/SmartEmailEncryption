@@ -1,0 +1,9 @@
+Data Label,Algorithm,Size (bytes),Encrypt Time (ms),Decrypt Time (ms),Status
+SMALL (12 bytes),AES,11,4261.02,24.59,OK
+SMALL (12 bytes),Blowfish,11,2395.11,26.99,OK
+SMALL (12 bytes),ChaCha20,11,2477.8,25.38,OK
+SMALL (12 bytes),ECIES,11,2398.75,25.01,OK
+UTF8 (emoji),AES,17,4099.73,25.86,OK
+UTF8 (emoji),Blowfish,17,2530.94,22.65,OK
+UTF8 (emoji),ChaCha20,17,2462.68,27.57,OK
+UTF8 (emoji),ECIES,17,3302.61,23.82,OK
